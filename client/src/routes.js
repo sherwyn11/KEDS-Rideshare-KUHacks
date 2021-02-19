@@ -12,7 +12,6 @@ import UserProfile from "views/UserProfile/UserProfile.js";
 import DriverProfile from "views/DriverProfile/DriverProfile.js";
 import TableList from "views/TableList/TableList.js";
 import Typography from "views/Typography/Typography.js";
-import Icons from "views/Icons/Icons.js";
 import Maps from "views/Maps/Maps.js";
 import NotificationsPage from "views/Notifications/Notifications.js";
 import { DriveEta } from "@material-ui/icons";
@@ -58,14 +57,6 @@ const dashboardRoutes = [
     rtlName: "طباعة",
     icon: LibraryBooks,
     component: Typography,
-    layout: "/admin"
-  },
-  {
-    path: "/icons",
-    name: "Icons",
-    rtlName: "الرموز",
-    icon: BubbleChart,
-    component: Icons,
     layout: "/admin"
   },
   {

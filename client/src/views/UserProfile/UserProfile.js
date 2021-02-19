@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 // core components
 import GridItem from "components/Grid/GridItem.js";
-
 import GridContainer from "components/Grid/GridContainer.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
 import Button from "components/CustomButtons/Button.js";
@@ -12,18 +11,21 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardAvatar from "components/Card/CardAvatar.js";
 import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
+import Snackbar from '@material-ui/core/Snackbar';
 import Portis from '@portis/web3';
+import MuiAlert from '@material-ui/lab/Alert';
 import Web3 from 'web3';
-
 import avatar from "assets/img/faces/marc.jpg";
-import { FormControl, TableBody, TableContainer, Table, TableHead, TableCell, TableRow } from "@material-ui/core";
+import { FormControl, TableBody, TableContainer, Table, TableCell, TableRow } from "@material-ui/core";
 import Paper from '@material-ui/core/Paper';
+
 const myPrivateEthereumNode = {
   nodeUrl: 'HTTP://127.0.0.1:8545',
   chainId: 1337,
 };
 const portis = new Portis('1f0f049d-c90d-4c72-85ac-1067a6d94ef6', myPrivateEthereumNode);
 const web3 = new Web3(portis.provider);
+
 const StyledTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: theme.palette.common.black,
@@ -64,29 +66,56 @@ const styles = {
 
 const useStyles = makeStyles(styles);
 
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 export default function UserProfile() {
   const classes = useStyles();
   const [ show, setHide ] = useState(false)
+  const [ open, setOpen ] = React.useState(false);
   const [ formData, setFormData ] = useState({
     name: "",
     contact: "",
     email: "",
   })
+  const handleSuccess = () => {
+    setOpen(true);
+  };
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpen(false);
+  };
+
   function handleChange(event) {
     const { id, value } = event.target
     setFormData({ ...formData, [ id ]: value })
   }
+
   function handleSubmit(event) {
     setHide(true)
     web3.eth.getAccounts((error, accounts) => {
       console.log(accounts);
+      localStorage.setItem('account', accounts[ 0 ])
+      localStorage.setItem('name', formData.name)
+      localStorage.setItem('contact', formData.contact)
+      localStorage.setItem('email', formData.email)
     });
+    handleSuccess()
     event.preventDefault();
   }
+
   return (
     <div>
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={open} autoHideDuration={5000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success">
+          Success Wallet Address {localStorage.getItem('account')}!
+        </Alert>
+      </Snackbar>
       <GridContainer>
-        <GridItem>
+        <GridItem xs={12} sm={12} md={7}>
           <form onSubmit={handleSubmit}>
             <Card>
               <CardHeader color="primary">
@@ -143,7 +172,7 @@ export default function UserProfile() {
           </form>
         </GridItem>
         {
-          show && <GridItem xs={12} sm={12} md={4}>
+          show && <GridItem xs={12} sm={12} md={5} >
             <Card profile>
               <CardAvatar profile>
                 <a href="#pablo" onClick={e => e.preventDefault()}>
@@ -151,7 +180,7 @@ export default function UserProfile() {
                 </a>
               </CardAvatar>
               <CardBody profile>
-                <h6 className={classes.cardCategory}>User</h6>
+                <p className={classes.cardCategory}>USER</p>
                 <h4 className={classes.cardTitle}>{formData.name}</h4>
                 <p className={classes.description}>
                   <TableContainer component={Paper}>
@@ -174,7 +203,6 @@ export default function UserProfile() {
                     </Table>
                   </TableContainer>
                 </p>
-
                 <Button color="primary" round onClick={e => e.preventDefault()}>
                   Edit
               </Button>
