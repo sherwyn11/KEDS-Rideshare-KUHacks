@@ -24,7 +24,7 @@ const useStyles = makeStyles(styles);
 
 export default function RTLNavbarLinks() {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(null);
+  const [ open, setOpen ] = React.useState(null);
   const handleToggle = event => {
     if (open && open.contains(event.target)) {
       setOpen(null);
@@ -91,7 +91,7 @@ export default function RTLNavbarLinks() {
           transition
           disablePortal
           className={
-            classNames({ [classes.popperClose]: !open }) +
+            classNames({ [ classes.popperClose ]: !open }) +
             " " +
             classes.popperNav
           }
