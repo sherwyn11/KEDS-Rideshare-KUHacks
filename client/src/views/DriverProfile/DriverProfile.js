@@ -12,18 +12,20 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardAvatar from "components/Card/CardAvatar.js";
 import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
-import PORTIS_DAPP_ID from "../../../.env"
+// import PORTIS_DAPP_ID from "../../../.env"
 
 import avatar from "assets/img/faces/driver.png";
 import { TableBody, TableContainer, Table, TableCell, TableRow } from "@material-ui/core";
 import Paper from '@material-ui/core/Paper';
 import Portis from '@portis/web3';
 import Web3 from 'web3';
+
 const myPrivateEthereumNode = {
   nodeUrl: 'HTTP://127.0.0.1:8545',
   chainId: 1337,
 };
-const portis = new Portis(PORTIS_DAPP_ID, myPrivateEthereumNode);
+
+const portis = new Portis('1f0f049d-c90d-4c72-85ac-1067a6d94ef6', myPrivateEthereumNode);
 const web3 = new Web3(portis.provider);
 
 const StyledTableCell = withStyles((theme) => ({
