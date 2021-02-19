@@ -33,7 +33,7 @@ export default function Icons() {
             </p>
           </CardHeader>
           <CardBody>
-            <Hidden only={["sm", "xs"]}>
+            <Hidden only={[ "sm", "xs" ]}>
               <iframe
                 className={classes.iframe}
                 src="https://material.io/icons/"
@@ -42,7 +42,7 @@ export default function Icons() {
                 <p>Your browser does not support iframes.</p>
               </iframe>
             </Hidden>
-            <Hidden only={["lg", "md"]}>
+            <Hidden only={[ "lg", "md" ]}>
               <GridItem xs={12} sm={12} md={6}>
                 <h5>
                   The icons are visible on Desktop mode inside an iframe. Since

@@ -12,18 +12,22 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardAvatar from "components/Card/CardAvatar.js";
 import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
+// import PORTIS_DAPP_ID from "../../../.env"
+
+import avatar from "assets/img/faces/driver.png";
+import { TableBody, TableContainer, Table, TableCell, TableRow } from "@material-ui/core";
+import Paper from '@material-ui/core/Paper';
 import Portis from '@portis/web3';
 import Web3 from 'web3';
 
-import avatar from "assets/img/faces/marc.jpg";
-import { FormControl, TableBody, TableContainer, Table, TableHead, TableCell, TableRow } from "@material-ui/core";
-import Paper from '@material-ui/core/Paper';
 const myPrivateEthereumNode = {
   nodeUrl: 'HTTP://127.0.0.1:8545',
   chainId: 1337,
 };
+
 const portis = new Portis('1f0f049d-c90d-4c72-85ac-1067a6d94ef6', myPrivateEthereumNode);
 const web3 = new Web3(portis.provider);
+
 const StyledTableCell = withStyles((theme) => ({
   head: {
     backgroundColor: theme.palette.common.black,
@@ -64,13 +68,16 @@ const styles = {
 
 const useStyles = makeStyles(styles);
 
-export default function UserProfile() {
+export default function DriverProfile() {
   const classes = useStyles();
   const [ show, setHide ] = useState(false)
   const [ formData, setFormData ] = useState({
     name: "",
     contact: "",
     email: "",
+    carNo: "",
+    noOfSeats: 0,
+    rating: 0
   })
   function handleChange(event) {
     const { id, value } = event.target
@@ -90,12 +97,12 @@ export default function UserProfile() {
           <form onSubmit={handleSubmit}>
             <Card>
               <CardHeader color="primary">
-                <h4 className={classes.cardTitleWhite}>User Profile</h4>
+                <h4 className={classes.cardTitleWhite}>Driver Profile</h4>
                 <p className={classes.cardCategoryWhite}>Complete your profile</p>
               </CardHeader>
               <CardBody>
                 <GridContainer>
-                  <GridItem xs={12} sm={12} md={6}>
+                  <GridItem xs={12} sm={12} md={5}>
                     <CustomInput
                       inputProps={{
                         onChange: (e) => handleChange(e),
@@ -108,7 +115,7 @@ export default function UserProfile() {
                       }}
                     />
                   </GridItem>
-                  <GridItem xs={12} sm={12} md={6}>
+                  <GridItem xs={12} sm={12} md={3}>
                     <CustomInput
                       inputProps={{
                         onChange: (e) => handleChange(e),
@@ -121,7 +128,7 @@ export default function UserProfile() {
                       }}
                     />
                   </GridItem>
-                  <GridItem xs={12} sm={12} md={12}>
+                  <GridItem xs={12} sm={12} md={4}>
                     <CustomInput
                       inputProps={{
                         onChange: (e) => handleChange(e),
@@ -129,6 +136,34 @@ export default function UserProfile() {
                       }}
                       labelText="Email Address"
                       id="email"
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                    />
+                  </GridItem>
+                </GridContainer>
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={6}>
+                    <CustomInput
+                      inputProps={{
+                        onChange: (e) => handleChange(e),
+                        type: "number"
+                      }}
+                      labelText="Car Number"
+                      id="carNo"
+                      formControlProps={{
+                        fullWidth: true
+                      }}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={6}>
+                    <CustomInput
+                      inputProps={{
+                        onChange: (e) => handleChange(e),
+                        type: "number"
+                      }}
+                      labelText="Number of Seats"
+                      id="noOfSeats"
                       formControlProps={{
                         fullWidth: true
                       }}
@@ -151,7 +186,7 @@ export default function UserProfile() {
                 </a>
               </CardAvatar>
               <CardBody profile>
-                <h6 className={classes.cardCategory}>User</h6>
+                <h6 className={classes.cardCategory}>DRIVER</h6>
                 <h4 className={classes.cardTitle}>{formData.name}</h4>
                 <p className={classes.description}>
                   <TableContainer component={Paper}>
@@ -170,6 +205,23 @@ export default function UserProfile() {
                           <StyledTableCell align="right">{formData.email}</StyledTableCell>
 
                         </StyledTableRow>
+                        <StyledTableRow>
+                          <StyledTableCell component="th" scope="row">
+                            Car Number
+                        </StyledTableCell>
+                          <StyledTableCell align="right">{formData.carNo}</StyledTableCell>
+
+                        </StyledTableRow>
+                        <StyledTableRow>
+                          <StyledTableCell component="th" scope="row">
+                            Number of Seats
+                        </StyledTableCell>
+                          <StyledTableCell align="right">{formData.noOfSeats}</StyledTableCell>
+
+                        </StyledTableRow>
+
+
+
                       </TableBody>
                     </Table>
                   </TableContainer>

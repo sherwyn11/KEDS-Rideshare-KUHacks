@@ -50,12 +50,12 @@ const useStyles = makeStyles(styles);
 
 export default function Notifications() {
   const classes = useStyles();
-  const [tl, setTL] = React.useState(false);
-  const [tc, setTC] = React.useState(false);
-  const [tr, setTR] = React.useState(false);
-  const [bl, setBL] = React.useState(false);
-  const [bc, setBC] = React.useState(false);
-  const [br, setBR] = React.useState(false);
+  const [ tl, setTL ] = React.useState(false);
+  const [ tc, setTC ] = React.useState(false);
+  const [ tr, setTR ] = React.useState(false);
+  const [ bl, setBL ] = React.useState(false);
+  const [ bc, setBC ] = React.useState(false);
+  const [ br, setBR ] = React.useState(false);
   React.useEffect(() => {
     // Specify how to clean up after this effect:
     return function cleanup() {
@@ -71,7 +71,7 @@ export default function Notifications() {
       case "tl":
         if (!tl) {
           setTL(true);
-          setTimeout(function() {
+          setTimeout(function () {
             setTL(false);
           }, 6000);
         }
@@ -79,7 +79,7 @@ export default function Notifications() {
       case "tc":
         if (!tc) {
           setTC(true);
-          setTimeout(function() {
+          setTimeout(function () {
             setTC(false);
           }, 6000);
         }
@@ -87,7 +87,7 @@ export default function Notifications() {
       case "tr":
         if (!tr) {
           setTR(true);
-          setTimeout(function() {
+          setTimeout(function () {
             setTR(false);
           }, 6000);
         }
@@ -95,7 +95,7 @@ export default function Notifications() {
       case "bl":
         if (!bl) {
           setBL(true);
-          setTimeout(function() {
+          setTimeout(function () {
             setBL(false);
           }, 6000);
         }
@@ -103,7 +103,7 @@ export default function Notifications() {
       case "bc":
         if (!bc) {
           setBC(true);
-          setTimeout(function() {
+          setTimeout(function () {
             setBC(false);
           }, 6000);
         }
@@ -111,7 +111,7 @@ export default function Notifications() {
       case "br":
         if (!br) {
           setBR(true);
-          setTimeout(function() {
+          setTimeout(function () {
             setBR(false);
           }, 6000);
         }

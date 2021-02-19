@@ -25,8 +25,8 @@ const useStyles = makeStyles(styles);
 
 export default function AdminNavbarLinks() {
   const classes = useStyles();
-  const [openNotification, setOpenNotification] = React.useState(null);
-  const [openProfile, setOpenProfile] = React.useState(null);
+  const [ openNotification, setOpenNotification ] = React.useState(null);
+  const [ openProfile, setOpenProfile ] = React.useState(null);
   const handleClickNotification = event => {
     if (openNotification && openNotification.contains(event.target)) {
       setOpenNotification(null);
@@ -101,7 +101,7 @@ export default function AdminNavbarLinks() {
           transition
           disablePortal
           className={
-            classNames({ [classes.popperClose]: !openNotification }) +
+            classNames({ [ classes.popperClose ]: !openNotification }) +
             " " +
             classes.popperNav
           }
@@ -176,7 +176,7 @@ export default function AdminNavbarLinks() {
           transition
           disablePortal
           className={
-            classNames({ [classes.popperClose]: !openProfile }) +
+            classNames({ [ classes.popperClose ]: !openProfile }) +
             " " +
             classes.popperNav
           }
