@@ -19,13 +19,13 @@ import avatar from "assets/img/faces/driver.png";
 import { FormControl, TableBody, TableContainer, Table, TableCell, TableRow } from "@material-ui/core";
 import Paper from '@material-ui/core/Paper';
 
-const myPrivateEthereumNode = {
-  nodeUrl: 'HTTP://127.0.0.1:8545',
-  chainId: 1337,
-};
+// const myPrivateEthereumNode = {
+//   nodeUrl: 'HTTP://127.0.0.1:8545',
+//   chainId: 1337,
+// };
 
-const portis = new Portis('1f0f049d-c90d-4c72-85ac-1067a6d94ef6', myPrivateEthereumNode);
-const web3 = new Web3(portis.provider);
+// const portis = new Portis('1f0f049d-c90d-4c72-85ac-1067a6d94ef6', myPrivateEthereumNode);
+let web3;
 
 const StyledTableCell = withStyles((theme) => ({
   head: {

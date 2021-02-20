@@ -30,7 +30,7 @@ export default function Admin({ ...rest }) {
             <Route
               path={prop.layout + prop.path}
               render={() => (
-                <prop.component rideManager={rest.rideManager} />
+                <prop.component rideManager={rest.rideManager} web3={ rest.web3 }/>
               )}
               key={key}
             />

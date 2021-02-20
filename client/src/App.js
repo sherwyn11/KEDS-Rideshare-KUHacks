@@ -11,8 +11,6 @@ import "./styles.css";
 
 import RideManager from "./contracts/RideManager.json";
 import Web3 from 'web3';
-import DriverProfile from "views/DriverProfile/DriverProfile";
-import UserProfile from "views/UserProfile/UserProfile.js";
 
 
 const hist = createBrowserHistory();
@@ -23,7 +21,6 @@ class App extends Component {
         this.state = {
             'account': null,
             'rideManager': null,
-            'identicon': null,
             'loading': true,
             'web3': null,
         }
@@ -78,7 +75,7 @@ class App extends Component {
                     <Route
                         path="/admin"
                         render={(props) => (
-                            <Admin rideManager={this.state.rideManager} />
+                            <Admin rideManager={this.state.rideManager} web3={ this.state.web3 }/>
                         )}
                     />
                     <Redirect from="/" to="/admin/dashboard" />
