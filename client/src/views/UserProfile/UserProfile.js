@@ -18,10 +18,14 @@ import Web3 from 'web3';
 import avatar from "assets/img/faces/marc.jpg";
 import { FormControl, TableBody, TableContainer, Table, TableHead, TableCell, TableRow } from "@material-ui/core";
 import Paper from '@material-ui/core/Paper';
+
+
 const myPrivateEthereumNode = {
-  nodeUrl: 'HTTP://127.0.0.1:8545',
+  nodeUrl: 'HTTP://127.0.0.1:7545',
   chainId: 1337,
 };
+
+
 const portis = new Portis('1f0f049d-c90d-4c72-85ac-1067a6d94ef6', myPrivateEthereumNode);
 const web3 = new Web3(portis.provider);
 const StyledTableCell = withStyles((theme) => ({
@@ -72,10 +76,12 @@ export default function UserProfile() {
     contact: "",
     email: "",
   })
+
   function handleChange(event) {
     const { id, value } = event.target
     setFormData({ ...formData, [ id ]: value })
   }
+  
   function handleSubmit(event) {
     setHide(true)
     web3.eth.getAccounts((error, accounts) => {
