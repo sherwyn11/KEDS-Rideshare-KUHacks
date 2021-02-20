@@ -11,16 +11,18 @@ import "./styles.css";
 
 import RideManager from "./contracts/RideManager.json";
 import Web3 from 'web3';
+import DriverProfile from "views/DriverProfile/DriverProfile";
+import UserProfile from "views/UserProfile/UserProfile.js";
 
 
 const hist = createBrowserHistory();
 
 class App extends Component {
-    constructor() {
+    constructor () {
         super();
         this.state = {
             'account': null,
-            'supplyChain': null,
+            'rideManager': null,
             'identicon': null,
             'loading': true,
             'web3': null,
@@ -47,7 +49,7 @@ class App extends Component {
 
     handleInputChange = (e) => {
         this.setState({
-            [e.target.id]: e.target.value,
+            [ e.target.id ]: e.target.value,
         })
     }
 
@@ -55,29 +57,35 @@ class App extends Component {
         const web3 = window.web3
         const accounts = await web3.eth.getAccounts();
         console.log(accounts);
-        this.setState({ 'account': accounts[0] });
+        this.setState({ 'account': accounts[ 0 ] });
         const networkId = await web3.eth.net.getId();
-        const networkData = RideManager.networks[networkId];
+        const networkData = RideManager.networks[ networkId ];
         if (networkData) {
-            const supplyChain = new web3.eth.Contract(RideManager.abi, networkData.address);
-            this.setState({ 'supplyChain': supplyChain, 'loading': false, 'web3': web3 });
+            const rideManager = new web3.eth.Contract(RideManager.abi, networkData.address);
+            this.setState({ 'rideManager': rideManager, 'loading': false, 'web3': web3 });
         } else {
-            window.alert('Supply chain contract not deployed to detected network.');
+            window.alert('Ride Manager contract not deployed to detected network.');
         }
     }
 
-  render() {
-    if (!this.state.web3) {
-      return <div>Loading Web3, accounts, and contract...</div>;
+    render() {
+        if (!this.state.web3) {
+            return <div>Loading Web3, accounts, and contract...</div>;
+        }
+        return (
+            <Router history={hist}>
+                <Switch>
+                    <Route
+                        path="/admin"
+                        render={(props) => (
+                            <Admin rideManager={this.state.rideManager} />
+                        )}
+                    />
+                    <Redirect from="/" to="/admin/dashboard" />
+                </Switch>
+            </Router>
+        );
     }
-    return (
-        <Router history={hist}>
-            <Switch>
-                <Route path="/" component={Admin} />
-            </Switch>
-        </Router>
-    );
-  }
 }
 
 export default App;
