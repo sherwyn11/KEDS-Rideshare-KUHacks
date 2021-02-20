@@ -41,7 +41,6 @@ const useStyles = makeStyles((theme) => {
   return {
     ...styles,
     button: {
-      marginTop: theme.spacing(1),
       marginRight: theme.spacing(1),
     },
     actionsContainer: {
@@ -59,9 +58,10 @@ function getSteps() {
   return [ 'Choose source & destination', 'Enter number of seats', 'Select Driver', 'Picked Up', 'Dropped off' ];
 }
 
-export default function RideShareSteps() {
+export default function RideShareSteps(props) {
   const classes = useStyles();
-  const [ activeStep, setActiveStep ] = React.useState(0);
+  const [activeStep, setActiveStep] = React.useState(0);
+  const [rideManager, setRideManager] = React.useState(props.rideManager);
   const steps = getSteps();
 
   function getStepContent(step) {
@@ -78,15 +78,25 @@ export default function RideShareSteps() {
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="h2">
                     RideShare Location
-          </Typography>
-                  <Typography variant="body2" color="textSecondary" component="p">
-                    To book a RideShare all you would need to do is login to your RideShare account and choose a location. Enter your pickup and drop locations and click on ‘Ride Now’.
+                  </Typography>
+                  {
+                    localStorage.getItem("destinationLng") === null ?
+                      <Typography variant="body2" color="textSecondary" component="p">
+                        To book a RideShare all you would need to do is login to your RideShare account and choose a location. Enter your pickup and drop locations and click on ‘Ride Now’.
                 </Typography>
+                      :
+
+                      <Typography variant="body2" color="textSecondary" component="p">
+                        Time: {localStorage.getItem('time')}<br />
+                          Distance: {localStorage.getItem('distance')}<br />
+                      </Typography>
+
+                  }
                 </CardContent>
               </CardActionArea>
               <CardActions>
                 <Button
-                  variant="contained"
+                  variant="outlined"
                   color="secondary"
                   href="/admin/maps"
                   className={classes.button}
@@ -126,7 +136,10 @@ export default function RideShareSteps() {
   }
   const handleNext = (e) => {
     const { value, id } = e.target;
-
+    if(activeStep + 1 === 3) {
+      console.log('Ride confirmed');
+      console.log(rideManager);
+    }
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
   };

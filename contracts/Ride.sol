@@ -3,8 +3,8 @@ pragma experimental ABIEncoderV2;
 
 contract Ride {
 
-    address riderAddr;
-    address driverAddr;
+    address payable riderAddr;
+    address payable driverAddr;
     string[] fromAddr;
     string[] toAddr;
     bytes32 amount;
@@ -12,10 +12,10 @@ contract Ride {
     bool confirmedByRider;
     bool confirmedByDriver;
     
-    event UpdateConfirmationEvent(address _driverAddr);
+    event UpdateConfirmationEvent(address payable indexed _driverAddr, address payable indexed _riderAddr);
 
     
-    constructor(address _riderAddr, address _driverAddr, string[] memory _fromAddr, string[] memory _toAddr, bytes32 _amount) public {
+    constructor(address payable _riderAddr, address payable _driverAddr, string[] memory _fromAddr, string[] memory _toAddr, bytes32 _amount) public {
         riderAddr = _riderAddr;
         driverAddr = _driverAddr;
         fromAddr = _fromAddr;
@@ -32,7 +32,7 @@ contract Ride {
     
     function updateDriverAddress(address payable _driverAddr) public {
         driverAddr = _driverAddr;
-        emit UpdateConfirmationEvent(_driverAddr);
+        emit UpdateConfirmationEvent(_driverAddr, riderAddr);
     }
     
     function updateRiderConfirmation(bool _status) public {
