@@ -25,7 +25,6 @@ import Paper from '@material-ui/core/Paper';
 // };
 
 // const portis = new Portis('1f0f049d-c90d-4c72-85ac-1067a6d94ef6', myPrivateEthereumNode);
-let web3;
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
@@ -71,17 +70,20 @@ function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
 
-export default function DriverProfile() {
+export default function DriverProfile(props) {
   const classes = useStyles();
   const [ show, setHide ] = useState(false)
-  const [ open, setOpen ] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [web3, setWeb3] = useState(props.web3);
+  const [loading, isLoading] = useState(false);
+
   const [ formData, setFormData ] = useState({
     name: "",
     contact: "",
     email: "",
     carNo: "",
     noOfSeats: 0,
-    rating: 0
+    rating: 5
   })
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -102,13 +104,25 @@ export default function DriverProfile() {
     setHide(true)
     web3.eth.getAccounts((error, accounts) => {
       console.log(accounts);
-      localStorage.setItem('account', accounts[ 0 ])
+      localStorage.setItem('account', accounts[0])
       localStorage.setItem('name', formData.name)
       localStorage.setItem('contact', formData.contact)
       localStorage.setItem('email', formData.email)
-      localStorage.setItem('carNo', accounts[ 0 ])
-      localStorage.setItem('noOfSeats', formData.name)
-      localStorage.setItem('rating', formData.contact)
+      localStorage.setItem('carNo', accounts[0])
+      localStorage.setItem('noOfSeats', formData.noOfSeats)
+      localStorage.setItem('rating', formData.rating)
+
+
+      var n = web3.utils.padRight(web3.utils.fromAscii(formData.name), 64);
+      var c = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);
+      var e = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
+      var cn = web3.utils.padRight(web3.utils.fromAscii(formData.c), 64);
+
+      props.rideManager.methods.registerDriver(n, c, e, cn, Number(formData.noOfSeats), 1, accounts[0]).send({ from: accounts[0] })
+        .once('receipt', (receipt) => {
+          console.log(receipt);
+          isLoading(false);
+        })
     });
     handleSuccess()
     event.preventDefault();
