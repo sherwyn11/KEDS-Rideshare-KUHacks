@@ -33,7 +33,7 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
-import { LocationCity, LocationOn } from "@material-ui/icons";
+import { LocationCity, LocationOn, TvRounded } from "@material-ui/icons";
 import { CardActionArea, TextField } from "@material-ui/core";
 import Input from '@material-ui/core/Input';
 import Ride from '../../contracts/Ride.json';
@@ -70,8 +70,12 @@ export default function RideShareSteps(props) {
   const [account, setAccount] = React.useState(props.account);
   const [web3, setWeb3] = React.useState(props.web3);
   const [activeStep, setActiveStep] = React.useState(0);
-  const [loading, isLoading] = React.useState(false);
+  const [loading, isLoading] = React.useState(true);
   const [seats, updateSeats] = React.useState(1);
+  const [selectedDrivers, setSelectedDrivers] = React.useState([]);
+  const [userSelectedDriver, setUserSelectedDriver] = React.useState('');
+  const [rideRequests, setRideRequests] = React.useState([]);
+  const [rideContractAddress, setRideContractAddress] = React.useState('');
   const steps = getSteps();
 
   function getStepContent(step) {
@@ -136,7 +140,15 @@ export default function RideShareSteps(props) {
               />
             </div>);
         case 2:
-          return ``;
+          return loading ? `` : <div>
+            <CardBody>
+              <Table
+                tableHeaderColor="primary"
+                tableHead={["Name", "Contact", "Car No.", "Rating", "Accept/Decline"]}
+                tableData={selectedDrivers}
+              />
+            </CardBody>
+          </div>;
         case 3:
           return ``;
         case 4:
@@ -153,21 +165,8 @@ export default function RideShareSteps(props) {
             <CardBody>
               <Table
                 tableHeaderColor="primary"
-                tableHead={["Ride No.", "Rider Address", "From", "To", "Accept/Decline"]}
-                tableData={[
-                  ["Dakota Rice", "Niger", "Oud-Turnhout", "To",<Button
-                    variant="contained"
-                    color="primary"
-                    className={classes.button}
-                  >
-                    Accept
-                  </Button>],
-                  ["Minerva Hooper", "Curaçao", "Sinaai-Waas", "$23,789"],
-                  ["Sage Rodriguez", "Netherlands", "Baileux", "$56,142"],
-                  ["Philip Chaney", "Korea, South", "Overland Park", "$38,735"],
-                  ["Doris Greene", "Malawi", "Feldkirchen in Kärnten", "$63,542"],
-                  ["Mason Porter", "Chile", "Gloucester", "$78,615"]
-                ]}
+                tableHead={["Ride Address", "Rider Address", "From", "To", "Accept/Decline"]}
+                tableData={rideRequests}
               />
             </CardBody>
           </div>;
@@ -183,62 +182,154 @@ export default function RideShareSteps(props) {
   }
   const handleNext = async (e) => {
     const { value, id } = e.target;
-    if (activeStep === 0) {
-      console.log(account);
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    }
-    else if (activeStep === 1) {
-      updateSeats(value)
-      if (e.key == 'Enter') {
-        rideManager.methods.requestRide(
-          account,
-          [String(localStorage.getItem('sourceLat')), String(localStorage.getItem('sourceLng'))],
-          [String(localStorage.getItem('destinationLat')), String(localStorage.getItem('destinationLng'))],
-          web3.utils.padRight(web3.utils.fromAscii(20 + 0.5 * Number(localStorage.getItem('distance').split(" ")[0])), 64)).send({ from: account })
-          .once('receipt', async (receipt) => {
-            let data = await rideManager.methods.getRiderInfo(account).call({ 'from': account });
-            console.log(data);
-            var rideContractAddress = data[5][data[5].length - 1];
-            isLoading(false);
-            setActiveStep((prevActiveStep) => prevActiveStep + 1);
-          });
-      }
-    } else if (activeStep === 2) {
-      axios.post('http://localhost:8000/api/rider/request-ride', {
-        user: {
-          "account": account,
-          "latitude": 25.0045,
-          "longitude": 25.001
-        }
-      }).then((response) => {
-        console.log(response.data.selectedDrivers);
-      }).catch((err) => {
-        console.log(err);
-      })
-      props.notifyNotificationListener("Sample")
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    } else if (activeStep === 3) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    } else if (activeStep === 4) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    } else {
-      //For Driver
+    if (localStorage.getItem('type') !== null && localStorage.getItem('type') === "0") {
+
       if (activeStep === 0) {
-        let events = await rideManager.getPastEvents('requestDriverEvent', { filter: { _driverAddr: account }, fromBlock: 0, toBlock: 'latest' });
+        console.log(account);
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      }
+      else if (activeStep === 1) {
+        updateSeats(value)
+        if (e.key == 'Enter') {
+          rideManager.methods.requestRide(
+            account,
+            [String(localStorage.getItem('sourceLat')), String(localStorage.getItem('sourceLng'))],
+            [String(localStorage.getItem('destinationLat')), String(localStorage.getItem('destinationLng'))],
+            web3.utils.padRight(web3.utils.fromAscii(20 + 0.5 * Number(localStorage.getItem('distance').split(" ")[0])), 64)).send({ from: account })
+            .once('receipt', async (receipt) => {
+              let data = await rideManager.methods.getRiderInfo(account).call({ 'from': account });
+              console.log(data);
+              setRideContractAddress(data[5][data[5].length - 1]);
+              // isLoading(false);
+              setActiveStep((prevActiveStep) => prevActiveStep + 1);
+            });
+          // setActiveStep((prevActiveStep) => prevActiveStep + 1);
+
+        }
+      } else if (activeStep === 2) {
+        isLoading(true);
+        axios.post('http://localhost:8000/api/rider/request-ride', {
+          user: {
+            "account": account,
+            "latitude": 25,
+            "longitude": 25
+          }
+        }).then((response) => {
+          console.log(response.data.selectedDrivers);
+          let temp = response.data.selectedDrivers;
+          const tempList = temp.map(data => {
+            return (
+              [
+                web3.utils.hexToUtf8(data.name).trim(),
+                web3.utils.hexToUtf8(data.contact).trim(),
+                web3.utils.hexToUtf8(data.carNo).trim(),
+                data.rating.toString(),
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  onClick={() => {
+                    setUserSelectedDriver(data.ethAddress);
+                    rideManager.methods.requestDriver(account, data.ethAddress, rideContractAddress).send({ from: account })
+                      .once('receipt', async (receipt) => {
+                        console.log(receipt);
+                        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                      });
+                  }}
+                >
+                  Accept
+              </Button>
+              ]
+            );
+          });
+          console.log(tempList);
+          setSelectedDrivers(tempList);
+          isLoading(false);
+        }).catch((err) => {
+          console.log(err);
+        })
+        props.notifyNotificationListener("Sample")
+        // setActiveStep((prevActiveStep) => prevActiveStep + 1);
+
+      } else if (activeStep === 3) {
+        const ride = new web3.eth.Contract(Ride.abi, rideContractAddress);
+        let events = await ride.getPastEvents('UpdateConfirmationEvent', { filter: { _riderAddr: account }, fromBlock: 0, toBlock: 'latest' });
         events = events.filter((event) => {
-          return event.returnValues._driverAddr == account;
+          return event.returnValues._riderAddr === account && event.returnValues._driverAddr === userSelectedDriver;
         });
         console.log(events);
+        if (events.length > 0) { 
+          alert('Driver has accepted request');
+          ride.methods.updateRiderConfirmation(true).send({ from: account })
+            .once('receipt', async (receipt) => {
+              console.log(receipt);
+            });
+          setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
+        }
 
-        const ride = new web3.eth.Contract(Ride.abi, events[0].returnValues.rideAddr);
+      } else if (activeStep === 4) {
+        const ride = new web3.eth.Contract(Ride.abi, rideContractAddress);
+        ride.methods.updateRideComplete(true).send({ from: account })
+          .once('receipt', async (receipt) => {
+            console.log(receipt);
+            let info = await ride.methods.getRideInfo().call({ from: account });
+            console.log(info);
+          });
+      }
+    }else {
+      //For Driver
+      if (activeStep === 0) {
+        console.log('heere');
+        let events = await rideManager.getPastEvents('requestDriverEvent', { filter: { _driverAddr: account }, fromBlock: 0, toBlock: 'latest' });
+        events = events.filter((event) => {
+          return event.returnValues._driverAddr === account;
+        });
+        console.log(events);
+        setRideContractAddress(events[events.length - 1].returnValues.rideAddr);
+
+        const ride = new web3.eth.Contract(Ride.abi, events[events.length - 1].returnValues.rideAddr);
         let info = await ride.methods.getRideInfo().call({ from: account });
+        var sourceDisplayName = '';
+        var destDisplayName = '';
 
-        console.log(info);
 
-        // web3.utils.hexToUtf8(name).trim()
-        
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        axios.get('https://us1.locationiq.com/v1/reverse.php?key=pk.7440d726e8b0dde92f02c33d4b74dcfd&lat=' + info[2][0] + '&lon=' + info[2][1] + '&format=json')
+          .then((response) => {
+            sourceDisplayName = response.data.display_name;
+            axios.get('https://us1.locationiq.com/v1/reverse.php?key=pk.7440d726e8b0dde92f02c33d4b74dcfd&lat=' + info[3][0] + '&lon=' + info[3][1] + '&format=json')
+              .then((response) => {
+                destDisplayName = response.data.display_name;
+                setRideRequests([[events[events.length - 1].returnValues.rideAddr, info[0], sourceDisplayName, destDisplayName,
+                <Button
+                  variant="contained"
+                  color="primary"
+                  className={classes.button}
+                  onClick={() => {
+                    ride.methods.updateDriverAddress(account).send({ from: account })
+                      .once('receipt', async (receipt) => {
+                        console.log(receipt);
+                        ride.methods.updateDriverConfirmation(true).send({ from: account })
+                          .once('receipt', async (receipt) => {
+                            console.log(receipt);
+                              setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                          });
+                      });
+                  }}
+                >
+                  Accept
+          </Button>
+                ]]);
+                isLoading(false);
+                console.log(rideRequests);
+              })
+              .catch((e) => {
+                console.log(e);
+              })
+          })
+          .catch((e) => {
+            console.log(e);
+          })
 
       } else if (activeStep == 1) {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
