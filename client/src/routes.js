@@ -17,7 +17,8 @@ import Maps from "views/Maps/Maps.js";
 import NotificationsPage from "views/Notifications/Notifications.js";
 import QrScanner from "views/QrScanner/QrScanner.js";
 import { DriveEta } from "@material-ui/icons";
-
+import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
+import RideShareSteps from "views/RideShareSteps/RideShareSteps";
 // core components/views for RTL layout
 
 const dashboardRoutes = [
@@ -27,6 +28,14 @@ const dashboardRoutes = [
     rtlName: "لوحة القيادة",
     icon: Dashboard,
     component: DashboardPage,
+    layout: "/admin"
+  },
+  {
+    path: "/steps",
+    name: "Get a Ride",
+    rtlName: "لوحة القيادة",
+    icon: FormatListNumberedIcon,
+    component: RideShareSteps,
     layout: "/admin"
   },
   {

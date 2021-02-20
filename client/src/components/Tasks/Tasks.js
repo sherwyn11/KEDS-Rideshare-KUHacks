@@ -21,10 +21,10 @@ const useStyles = makeStyles(styles);
 
 export default function Tasks(props) {
   const classes = useStyles();
-  const [checked, setChecked] = React.useState([...props.checkedIndexes]);
+  const [ checked, setChecked ] = React.useState([ ...props.checkedIndexes ]);
   const handleToggle = value => {
     const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
+    const newChecked = [ ...checked ];
     if (currentIndex === -1) {
       newChecked.push(value);
     } else {
@@ -34,7 +34,7 @@ export default function Tasks(props) {
   };
   const { tasksIndexes, tasks, rtlActive } = props;
   const tableCellClasses = classnames(classes.tableCell, {
-    [classes.tableCellRTL]: rtlActive
+    [ classes.tableCellRTL ]: rtlActive
   });
   return (
     <Table className={classes.table}>
@@ -54,7 +54,7 @@ export default function Tasks(props) {
                 }}
               />
             </TableCell>
-            <TableCell className={tableCellClasses}>{tasks[value]}</TableCell>
+            <TableCell className={tableCellClasses}>{tasks[ value ]}</TableCell>
             <TableCell className={classes.tableActions}>
               <Tooltip
                 id="tooltip-top"

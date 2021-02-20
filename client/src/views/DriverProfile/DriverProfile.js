@@ -20,7 +20,7 @@ import { FormControl, TableBody, TableContainer, Table, TableCell, TableRow } fr
 import Paper from '@material-ui/core/Paper';
 
 const myPrivateEthereumNode = {
-  nodeUrl: 'HTTP://127.0.0.1:7545',
+  nodeUrl: 'HTTP://127.0.0.1:8545',
   chainId: 1337,
 };
 
