@@ -10,6 +10,8 @@ import {
   DirectionsRenderer,
 
 } from "react-google-maps";
+import { Fab } from "@material-ui/core";
+import { LocalTaxi } from "@material-ui/icons";
 
 const { InfoBox } = require("react-google-maps/lib/components/addons/InfoBox");
 const { SearchBox } = require("react-google-maps/lib/components/places/SearchBox");
@@ -19,7 +21,7 @@ const Maps = compose(
     googleMapURL:
       "https://maps.googleapis.com/maps/api/js?key=AIzaSyAUxSCFAa8dpHXlqjdMlRRvuQm1rbUUP7A&v=3.exp&libraries=geometry,drawing,places",
     loadingElement: <div style={{ height: `100%` }} />,
-    containerElement: <div style={{ height: `1000px` }} />,
+    containerElement: <div style={{ height: `580px` }} />,
     mapElement: <div style={{ height: `100%` }} />
   }),
   withScriptjs,
@@ -39,7 +41,9 @@ const Maps = compose(
         (result, status) => {
           if (status === google.maps.DirectionsStatus.OK) {
             this.setState({
-              directions: result
+              directions: result,
+              distance: result.routes[ 0 ].legs[ 0 ].distance.text,
+              time: result.routes[ 0 ].legs[ 0 ].duration.text,
             });
           } else {
             console.error(`error fetching directions ${result}`);
@@ -128,7 +132,8 @@ const Maps = compose(
           refs.map.fitBounds(bounds);
         },
         getRoute: (source, destination) => {
-          console.log(source, destination);
+          console.log('Source', source.lat, source.lng);
+          console.log('Destination', destination.lat, destination.lng);
           const DirectionsService = new google.maps.DirectionsService();
 
           DirectionsService.route(
@@ -140,10 +145,16 @@ const Maps = compose(
             (result, status) => {
               if (status === google.maps.DirectionsStatus.OK) {
                 console.log(result);
+                localStorage.setItem('sourceLat', source.lat);
+                localStorage.setItem('sourceLng', source.lng);
+                localStorage.setItem('destinationLat', destination.lat);
+                localStorage.setItem('destinationLng', destination.lng)
+                localStorage.setItem('distance', result.routes[ 0 ].legs[ 0 ].distance.text);
+                localStorage.setItem('time', result.routes[ 0 ].legs[ 0 ].duration.text);
                 this.setState({
                   directions: result,
-                  distance: result.routes[0].legs[0].distance,
-                  time: result.routes[0].legs[0].duration,
+                  distance: result.routes[ 0 ].legs[ 0 ].distance.text,
+                  time: result.routes[ 0 ].legs[ 0 ].duration.text,
                 });
               } else {
                 console.error(`error fetching directions ${result}`);
@@ -195,6 +206,7 @@ const Maps = compose(
           width: `240px`,
           height: `32px`,
           marginTop: `27px`,
+          marginLeft: '5px',
           padding: `0 12px`,
           borderRadius: `3px`,
           boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`,
@@ -204,6 +216,18 @@ const Maps = compose(
         }}
       />
     </SearchBox>
+    <Fab variant="extended"
+      color="secondary"
+      href="/admin/steps"
+      style={{
+        position: "absolute",
+        right: "55px",
+        bottom: "25px"
+      }}
+    >
+      <LocalTaxi />
+  Ride Now
+</Fab>
     {props.directions && <DirectionsRenderer directions={props.directions} />}
   </GoogleMap>
 ));
