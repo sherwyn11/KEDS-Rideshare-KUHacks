@@ -1,73 +1,83 @@
-// import React, { Component } from "react";
-// import SimpleStorageContract from "./contracts/SimpleStorage.json";
-// import getWeb3 from "./getWeb3";
+import React, { Component } from "react";
+import { createBrowserHistory } from "history";
+import { Router, Route, Switch, Redirect } from "react-router-dom";
 
-// import "./App.css";
+// core components
+import Admin from "layouts/Admin.js";
 
-// class App extends Component {
-//   state = { storageValue: 0, web3: null, accounts: null, contract: null };
+import "assets/css/material-dashboard-react.css?v=1.9.0";
+import "./styles.css";
 
-//   componentDidMount = async () => {
-//     try {
-//       // Get network provider and web3 instance.
-//       const web3 = await getWeb3();
 
-//       // Use web3 to get the user's accounts.
-//       const accounts = await web3.eth.getAccounts();
+import RideManager from "./contracts/RideManager.json";
+import Web3 from 'web3';
 
-//       // Get the contract instance.
-//       const networkId = await web3.eth.net.getId();
-//       const deployedNetwork = SimpleStorageContract.networks[networkId];
-//       const instance = new web3.eth.Contract(
-//         SimpleStorageContract.abi,
-//         deployedNetwork && deployedNetwork.address,
-//       );
 
-//       // Set web3, accounts, and contract to the state, and then proceed with an
-//       // example of interacting with the contract's methods.
-//       this.setState({ web3, accounts, contract: instance }, this.runExample);
-//     } catch (error) {
-//       // Catch any errors for any of the above operations.
-//       alert(
-//         `Failed to load web3, accounts, or contract. Check console for details.`,
-//       );
-//       console.error(error);
-//     }
-//   };
+const hist = createBrowserHistory();
 
-//   runExample = async () => {
-//     const { accounts, contract } = this.state;
+class App extends Component {
+    constructor() {
+        super();
+        this.state = {
+            'account': null,
+            'supplyChain': null,
+            'identicon': null,
+            'loading': true,
+            'web3': null,
+        }
+    }
 
-//     // Stores a given value, 5 by default.
-//     await contract.methods.set(5).send({ from: accounts[0] });
+    async componentWillMount() {
+        await this.loadWeb3()
+        await this.loadBlockChain()
+    }
 
-//     // Get the value from the contract to prove it worked.
-//     const response = await contract.methods.get().call();
+    async loadWeb3() {
+        if (window.ethereum) {
+            window.web3 = new Web3(window.ethereum);
+            await window.ethereum.enable();
+        }
+        else if (window.web3) {
+            window.web3 = new Web3(window.web3.currentProvider);
+        }
+        else {
+            window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!');
+        }
+    }
 
-//     // Update state with the result.
-//     this.setState({ storageValue: response });
-//   };
+    handleInputChange = (e) => {
+        this.setState({
+            [e.target.id]: e.target.value,
+        })
+    }
 
-//   render() {
-//     if (!this.state.web3) {
-//       return <div>Loading Web3, accounts, and contract...</div>;
-//     }
-//     return (
-//       <div className="App">
-//         <h1>Good to Go!</h1>
-//         <p>Your Truffle Box is installed and ready.</p>
-//         <h2>Smart Contract Example</h2>
-//         <p>
-//           If your contracts compiled and migrated successfully, below will show
-//           a stored value of 5 (by default).
-//         </p>
-//         <p>
-//           Try changing the value stored on <strong>line 40</strong> of App.js.
-//         </p>
-//         <div>The stored value is: {this.state.storageValue}</div>
-//       </div>
-//     );
-//   }
-// }
+    async loadBlockChain() {
+        const web3 = window.web3
+        const accounts = await web3.eth.getAccounts();
+        console.log(accounts);
+        this.setState({ 'account': accounts[0] });
+        const networkId = await web3.eth.net.getId();
+        const networkData = RideManager.networks[networkId];
+        if (networkData) {
+            const supplyChain = new web3.eth.Contract(RideManager.abi, networkData.address);
+            this.setState({ 'supplyChain': supplyChain, 'loading': false, 'web3': web3 });
+        } else {
+            window.alert('Supply chain contract not deployed to detected network.');
+        }
+    }
 
-// export default App;
+  render() {
+    if (!this.state.web3) {
+      return <div>Loading Web3, accounts, and contract...</div>;
+    }
+    return (
+        <Router history={hist}>
+            <Switch>
+                <Route path="/" component={Admin} />
+            </Switch>
+        </Router>
+    );
+  }
+}
+
+export default App;
