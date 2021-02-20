@@ -75,7 +75,7 @@ class App extends Component {
                     <Route
                         path="/admin"
                         render={(props) => (
-                            <Admin rideManager={this.state.rideManager} web3={this.state.web3} />
+                            <Admin rideManager={this.state.rideManager} web3={this.state.web3} account={this.state.account}/>
                         )}
                     />
                     <Redirect from="/" to="/admin/dashboard" />

@@ -36,6 +36,7 @@ import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js"
 import { LocationCity, LocationOn } from "@material-ui/icons";
 import { CardActionArea, TextField } from "@material-ui/core";
 import Input from '@material-ui/core/Input';
+import Ride from '../../contracts/Ride.json';
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -65,6 +66,8 @@ function getSteps() {
 export default function RideShareSteps(props) {
   const classes = useStyles();
   const [rideManager, setRideManager] = React.useState(props.rideManager);
+  const [account, setAccount] = React.useState(props.account);
+  const [web3, setWeb3] = React.useState(props.web3);
   const [ activeStep, setActiveStep ] = React.useState(0);
   const steps = getSteps();
 
@@ -152,7 +155,7 @@ export default function RideShareSteps(props) {
     }
 
   }
-  const handleNext = (e) => {
+  const handleNext = async (e) => {
     const { value, id } = e.target;
     if (localStorage.getItem('type') !== null && localStorage.getItem('type') === "0") {
       //For User
@@ -170,6 +173,7 @@ export default function RideShareSteps(props) {
     } else {
       //For Driver
       if (activeStep === 0) {
+        let events = await rideManager.getPastEvents('requestDriverEvent', { filter: { _driverAddr: account }, fromBlock: 0, toBlock: 'latest' });
 
       } else if (activeStep == 1) {
 
