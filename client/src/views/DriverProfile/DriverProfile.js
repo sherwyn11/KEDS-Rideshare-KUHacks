@@ -73,10 +73,9 @@ function Alert(props) {
 export default function DriverProfile(props) {
   const classes = useStyles();
   const [ show, setHide ] = useState(false)
-  const [open, setOpen] = React.useState(false);
-  const [web3, setWeb3] = useState(props.web3);
-  const [loading, isLoading] = useState(false);
-
+  const [ open, setOpen ] = React.useState(false);
+  const [ web3, setWeb3 ] = useState(props.web3);
+  const [ loading, isLoading ] = useState(false);
   const [ formData, setFormData ] = useState({
     name: "",
     contact: "",
@@ -104,11 +103,11 @@ export default function DriverProfile(props) {
     setHide(true)
     web3.eth.getAccounts((error, accounts) => {
       console.log(accounts);
-      localStorage.setItem('account', accounts[0])
+      localStorage.setItem('account', accounts[ 0 ])
       localStorage.setItem('name', formData.name)
       localStorage.setItem('contact', formData.contact)
       localStorage.setItem('email', formData.email)
-      localStorage.setItem('carNo', accounts[0])
+      localStorage.setItem('carNo', accounts[ 0 ])
       localStorage.setItem('noOfSeats', formData.noOfSeats)
       localStorage.setItem('rating', formData.rating)
 
@@ -118,7 +117,7 @@ export default function DriverProfile(props) {
       var e = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
       var cn = web3.utils.padRight(web3.utils.fromAscii(formData.c), 64);
 
-      props.rideManager.methods.registerDriver(n, c, e, cn, Number(formData.noOfSeats), 1, accounts[0]).send({ from: accounts[0] })
+      props.rideManager.methods.registerDriver(n, c, e, cn, Number(formData.noOfSeats), 1, accounts[ 0 ]).send({ from: accounts[ 0 ] })
         .once('receipt', (receipt) => {
           console.log(receipt);
           isLoading(false);
