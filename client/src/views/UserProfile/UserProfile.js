@@ -18,6 +18,7 @@ import Web3 from 'web3';
 import avatar from "assets/img/faces/marc.jpg";
 import { FormControl, TableBody, TableContainer, Table, TableCell, TableRow } from "@material-ui/core";
 import Paper from '@material-ui/core/Paper';
+import RideManager from '../../contracts/RideManager.json';
 
 const myPrivateEthereumNode = {
   nodeUrl: 'HTTP://127.0.0.1:8545',
@@ -94,15 +95,14 @@ export default function UserProfile() {
     const { id, value } = event.target
     setFormData({ ...formData, [ id ]: value })
   }
-  function handleSubmit(event) {
+  
+  async function handleSubmit(event) {
     setHide(true)
-    web3.eth.getAccounts((error, accounts) => {
-      console.log(accounts);
-      localStorage.setItem('account', accounts[ 0 ])
-      localStorage.setItem('name', formData.name)
-      localStorage.setItem('contact', formData.contact)
-      localStorage.setItem('email', formData.email)
-    });
+    let accounts = await web3.eth.getAccounts();
+    localStorage.setItem('account', accounts[0])
+    localStorage.setItem('name', formData.name)
+    localStorage.setItem('contact', formData.contact)
+    localStorage.setItem('email', formData.email)
     handleSuccess()
     event.preventDefault();
   }
