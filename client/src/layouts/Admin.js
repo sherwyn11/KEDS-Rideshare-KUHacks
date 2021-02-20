@@ -9,6 +9,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Navbar from "components/Navbars/Navbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 import routes from "routes.js";
 
@@ -25,12 +27,22 @@ export default function Admin({ ...rest }) {
   const switchRoutes = (
     <Switch>
       {routes.map((prop, key) => {
-        if (prop.layout === "/admin") {
+        if (prop.layout === "/admin" && prop.path !== '/steps') {
           return (
             <Route
               path={prop.layout + prop.path}
               render={() => (
-                <prop.component rideManager={rest.rideManager} web3={ rest.web3 }/>
+                <prop.component rideManager={rest.rideManager} web3={rest.web3} />
+              )}
+              key={key}
+            />
+          );
+        } else if (prop.path === '/steps') {
+          return (
+            <Route
+              path={prop.layout + prop.path}
+              render={() => (
+                <prop.component rideManager={rest.rideManager} web3={rest.web3} notifyNotificationListener={NotifyMe} />
               )}
               key={key}
             />
@@ -46,7 +58,12 @@ export default function Admin({ ...rest }) {
   const classes = useStyles();
   // ref to help us initialize PerfectScrollbar on windows devices
   const mainPanel = React.createRef();
+  function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  }
+
   // states and functions
+  const [ open, setOpen ] = React.useState(false);
   const [ image, setImage ] = React.useState(bgImage);
   const [ color, setColor ] = React.useState("blue");
   const [ fixedClasses, setFixedClasses ] = React.useState("dropdown show");
@@ -75,6 +92,18 @@ export default function Admin({ ...rest }) {
       setMobileOpen(false);
     }
   };
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpen(false);
+  };
+  const handleSuccess = () => {
+    setOpen(true);
+  };
+  function NotifyMe(something) {
+    handleSuccess()
+  }
   // initialize and destroy the PerfectScrollbar plugin
   React.useEffect(() => {
     if (navigator.platform.indexOf("Win") > -1) {
@@ -114,7 +143,14 @@ export default function Admin({ ...rest }) {
         {/* On the /maps route we want the map to be on full screen - this is not possible if the content and conatiner classes are present because they have some paddings which would make the map smaller */}
         {getRoute() ? (
           <div className={classes.content}>
-            <div className={classes.container}>{switchRoutes}</div>
+            <div className={classes.container}>
+              <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'center' }} open={open} autoHideDuration={5000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="success">
+                  Success
+        </Alert>
+              </Snackbar>
+              {switchRoutes}
+            </div>
           </div>
         ) : (
             <div className={classes.map}>{switchRoutes}</div>

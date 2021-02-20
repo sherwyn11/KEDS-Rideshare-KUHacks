@@ -110,7 +110,7 @@ export default function DriverProfile(props) {
       localStorage.setItem('carNo', accounts[ 0 ])
       localStorage.setItem('noOfSeats', formData.noOfSeats)
       localStorage.setItem('rating', formData.rating)
-
+      localStorage.setItem('type', "1")
 
       var n = web3.utils.padRight(web3.utils.fromAscii(formData.name), 64);
       var c = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);

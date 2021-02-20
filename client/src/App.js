@@ -16,7 +16,7 @@ import Web3 from 'web3';
 const hist = createBrowserHistory();
 
 class App extends Component {
-    constructor() {
+    constructor () {
         super();
         this.state = {
             'account': null,
@@ -46,7 +46,7 @@ class App extends Component {
 
     handleInputChange = (e) => {
         this.setState({
-            [e.target.id]: e.target.value,
+            [ e.target.id ]: e.target.value,
         })
     }
 
