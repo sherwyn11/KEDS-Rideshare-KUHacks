@@ -55,7 +55,11 @@ const useStyles = makeStyles((theme) => {
   }
 });
 function getSteps() {
-  return [ 'Choose source & destination', 'Enter number of seats', 'Select Driver', 'Picked Up', 'Dropped off' ];
+  if (localStorage.getItem('type') !== null && localStorage.getItem('type') === "0") {
+    return [ 'Choose source & destination', 'Enter number of seats', 'Select Driver', 'Picked Up', 'Dropped off' ];
+  } else {
+    return [ 'Ride Confirmation', 'Picked Up', 'Dropped off' ];
+  }
 }
 
 export default function RideShareSteps(props) {
@@ -65,78 +69,114 @@ export default function RideShareSteps(props) {
   const steps = getSteps();
 
   function getStepContent(step) {
-    switch (step) {
-      case 0:
-        return (
-          <div>
-            <Card>
-              <CardActionArea>
-                <CardMedia
-                  image=""
-                  title="Google Maps"
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    RideShare Location
+    if (localStorage.getItem('type') !== null && localStorage.getItem('type') === "0") {
+      switch (step) {
+        case 0:
+          return (
+            <div>
+              <Card>
+                <CardActionArea>
+                  <CardMedia
+                    image=""
+                    title="Google Maps"
+                  />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="h2">
+                      RideShare Location
                   </Typography>
-                  {
-                    localStorage.getItem("destinationLng") === null ?
-                      <Typography variant="body2" color="textSecondary" component="p">
-                        To book a RideShare all you would need to do is login to your RideShare account and choose a location. Enter your pickup and drop locations and click on ‘Ride Now’.
+                    {
+                      localStorage.getItem("destinationLng") === null ?
+                        <Typography variant="body2" color="textSecondary" component="p">
+                          To book a RideShare all you would need to do is login to your RideShare account and choose a location. Enter your pickup and drop locations and click on ‘Ride Now’.
                 </Typography>
-                      :
+                        :
 
-                      <Typography variant="body2" color="textSecondary" component="p">
-                        Time: {localStorage.getItem('time')}<br />
+                        <Typography variant="body2" color="textSecondary" component="p">
+                          Time: {localStorage.getItem('time')}<br />
                           Distance: {localStorage.getItem('distance')}<br />
-                      </Typography>
+                        </Typography>
 
-                  }
-                </CardContent>
-              </CardActionArea>
-              <CardActions>
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  href="/admin/maps"
-                  className={classes.button}
-                  startIcon={<LocationOn />}
-                >
-                  Go To Maps
+                    }
+                  </CardContent>
+                </CardActionArea>
+                <CardActions>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    href="/admin/maps"
+                    className={classes.button}
+                    startIcon={<LocationOn />}
+                  >
+                    Go To Maps
       </Button>
-              </CardActions>
-            </Card>
+                </CardActions>
+              </Card>
 
-          </div>);
-      case 1:
-        return (
-          <div>
-            <TextField
-              type='number'
-              label="No. of Seats"
-              id="filled-margin-none"
-              defaultValue="Default Value"
-              className={classes.textField}
-              onChange={handleNext}
-              helperText="Before confirming the booking you would need to choose the number of seats that you would wish to book."
-              variant="outlined"
-            />
-          </div>);
-      case 2:
-        return ``;
-      case 3:
-        return ``;
-      case 4:
-        return ``;
-      case 5:
-        return ``;
-      default:
-        return 'Unknown step';
+            </div>);
+        case 1:
+          return (
+            <div>
+              <TextField
+                type='number'
+                label="No. of Seats"
+                id="filled-margin-none"
+                defaultValue="Default Value"
+                className={classes.textField}
+                onChange={handleNext}
+                helperText="Before confirming the booking you would need to choose the number of seats that you would wish to book."
+                variant="outlined"
+              />
+            </div>);
+        case 2:
+          return ``;
+        case 3:
+          return ``;
+        case 4:
+          return ``;
+        case 5:
+          return ``;
+        default:
+          return 'Unknown step';
+      }
+    } else {
+      switch (step) {
+        case 0:
+          return ``;
+        case 1:
+          return ``;
+        case 2:
+          return ``;
+        default:
+          return 'Unknown step';
+      }
     }
+
   }
   const handleNext = (e) => {
     const { value, id } = e.target;
+    if (localStorage.getItem('type') !== null && localStorage.getItem('type') === "0") {
+      //For User
+      if (activeStep === 0) {
 
+      } else if (activeStep == 1) {
+        props.notifyNotificationListener("Sample")
+      } else if (activeStep == 2) {
+
+      } else if (activeStep == 3) {
+
+      } else if (activeStep == 4) {
+
+      }
+    } else {
+      //For Driver
+      if (activeStep === 0) {
+
+      } else if (activeStep == 1) {
+
+      } else if (activeStep == 2) {
+
+      }
+    }
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
   };

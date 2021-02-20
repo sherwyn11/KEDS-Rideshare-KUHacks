@@ -76,9 +76,9 @@ function Alert(props) {
 export default function UserProfile(props) {
   const classes = useStyles();
   const [ show, setHide ] = useState(false)
-  const [open, setOpen] = React.useState(false);
-  const [loading, isLoading] = useState(false);
-  const [web3, setWeb3] = useState(props.web3);
+  const [ open, setOpen ] = React.useState(false);
+  const [ loading, isLoading ] = useState(false);
+  const [ web3, setWeb3 ] = useState(props.web3);
 
   const [ formData, setFormData ] = useState({
     name: "",
@@ -99,29 +99,31 @@ export default function UserProfile(props) {
     const { id, value } = event.target
     setFormData({ ...formData, [ id ]: value })
   }
-  
+
   async function handleSubmit(event) {
     event.preventDefault();
     setHide(true)
     let accounts = await web3.eth.getAccounts();
-    localStorage.setItem('account', accounts[0])
+    localStorage.setItem('account', accounts[ 0 ])
     localStorage.setItem('name', formData.name)
     localStorage.setItem('contact', formData.contact)
     localStorage.setItem('email', formData.email)
+    localStorage.setItem('type', "0")
+
 
     var n = web3.utils.padRight(web3.utils.fromAscii(formData.name), 64);
     var c = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);
     var e = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
 
 
-    props.rideManager.methods.registerRider(n, c, e, 0, accounts[0]).send({ from: accounts[0] })
+    props.rideManager.methods.registerRider(n, c, e, 0, accounts[ 0 ]).send({ from: accounts[ 0 ] })
       .once('receipt', (receipt) => {
         console.log(receipt);
         isLoading(false);
       })
     handleSuccess()
   }
-  
+
   if (loading) {
     return <Loader />;
   } else {
