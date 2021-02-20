@@ -20,7 +20,7 @@ class App extends Component {
         super();
         this.state = {
             'account': null,
-            'supplyChain': null,
+            'rideManager': null,
             'identicon': null,
             'loading': true,
             'web3': null,
@@ -59,10 +59,10 @@ class App extends Component {
         const networkId = await web3.eth.net.getId();
         const networkData = RideManager.networks[networkId];
         if (networkData) {
-            const supplyChain = new web3.eth.Contract(RideManager.abi, networkData.address);
-            this.setState({ 'supplyChain': supplyChain, 'loading': false, 'web3': web3 });
+            const rideManager = new web3.eth.Contract(RideManager.abi, networkData.address);
+            this.setState({ 'rideManager': rideManager, 'loading': false, 'web3': web3 });
         } else {
-            window.alert('Supply chain contract not deployed to detected network.');
+            window.alert('Ride Manager contract not deployed to detected network.');
         }
     }
 
@@ -73,7 +73,8 @@ class App extends Component {
     return (
         <Router history={hist}>
             <Switch>
-                <Route path="/" component={Admin} />
+                <Route path="/admin" component={Admin} />
+                <Redirect from="/" to="/admin/dashboard" />
             </Switch>
         </Router>
     );
