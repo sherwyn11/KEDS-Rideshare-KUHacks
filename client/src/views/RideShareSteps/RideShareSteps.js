@@ -9,6 +9,7 @@ import BugReport from "@material-ui/icons/BugReport";
 import Code from "@material-ui/icons/Code";
 import Cloud from "@material-ui/icons/Cloud";
 // core components
+import Table from "components/Table/Table.js";
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepButton from '@material-ui/core/StepButton';
@@ -16,7 +17,6 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import Table from "components/Table/Table.js";
 import Tasks from "components/Tasks/Tasks.js";
 import CustomTabs from "components/CustomTabs/CustomTabs.js";
 import Danger from "components/Typography/Danger.js";
@@ -37,6 +37,7 @@ import { LocationCity, LocationOn } from "@material-ui/icons";
 import { CardActionArea, TextField } from "@material-ui/core";
 import Input from '@material-ui/core/Input';
 import Ride from '../../contracts/Ride.json';
+import axios from 'axios';
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -68,7 +69,9 @@ export default function RideShareSteps(props) {
   const [rideManager, setRideManager] = React.useState(props.rideManager);
   const [account, setAccount] = React.useState(props.account);
   const [web3, setWeb3] = React.useState(props.web3);
-  const [ activeStep, setActiveStep ] = React.useState(0);
+  const [activeStep, setActiveStep] = React.useState(0);
+  const [loading, isLoading] = React.useState(false);
+  const [seats, updateSeats] = React.useState(1);
   const steps = getSteps();
 
   function getStepContent(step) {
@@ -111,7 +114,7 @@ export default function RideShareSteps(props) {
                     startIcon={<LocationOn />}
                   >
                     Go To Maps
-      </Button>
+                  </Button>
                 </CardActions>
               </Card>
 
@@ -124,8 +127,10 @@ export default function RideShareSteps(props) {
                 label="No. of Seats"
                 id="filled-margin-none"
                 defaultValue="Default Value"
+                onKeyDown={handleNext}
                 className={classes.textField}
                 onChange={handleNext}
+                value={seats}
                 helperText="Before confirming the booking you would need to choose the number of seats that you would wish to book."
                 variant="outlined"
               />
@@ -144,7 +149,28 @@ export default function RideShareSteps(props) {
     } else {
       switch (step) {
         case 0:
-          return ``;
+          return loading ? `` :  <div>
+            <CardBody>
+              <Table
+                tableHeaderColor="primary"
+                tableHead={["Ride No.", "Rider Address", "From", "To", "Accept/Decline"]}
+                tableData={[
+                  ["Dakota Rice", "Niger", "Oud-Turnhout", "To",<Button
+                    variant="contained"
+                    color="primary"
+                    className={classes.button}
+                  >
+                    Accept
+                  </Button>],
+                  ["Minerva Hooper", "Curaçao", "Sinaai-Waas", "$23,789"],
+                  ["Sage Rodriguez", "Netherlands", "Baileux", "$56,142"],
+                  ["Philip Chaney", "Korea, South", "Overland Park", "$38,735"],
+                  ["Doris Greene", "Malawi", "Feldkirchen in Kärnten", "$63,542"],
+                  ["Mason Porter", "Chile", "Gloucester", "$78,615"]
+                ]}
+              />
+            </CardBody>
+          </div>;
         case 1:
           return ``;
         case 2:
@@ -157,32 +183,71 @@ export default function RideShareSteps(props) {
   }
   const handleNext = async (e) => {
     const { value, id } = e.target;
-    if (localStorage.getItem('type') !== null && localStorage.getItem('type') === "0") {
-      //For User
-      if (activeStep === 0) {
-
-      } else if (activeStep == 1) {
-        props.notifyNotificationListener("Sample")
-      } else if (activeStep == 2) {
-
-      } else if (activeStep == 3) {
-
-      } else if (activeStep == 4) {
-
+    if (activeStep === 0) {
+      console.log(account);
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }
+    else if (activeStep === 1) {
+      updateSeats(value)
+      if (e.key == 'Enter') {
+        rideManager.methods.requestRide(
+          account,
+          [String(localStorage.getItem('sourceLat')), String(localStorage.getItem('sourceLng'))],
+          [String(localStorage.getItem('destinationLat')), String(localStorage.getItem('destinationLng'))],
+          web3.utils.padRight(web3.utils.fromAscii(20 + 0.5 * Number(localStorage.getItem('distance').split(" ")[0])), 64)).send({ from: account })
+          .once('receipt', async (receipt) => {
+            let data = await rideManager.methods.getRiderInfo(account).call({ 'from': account });
+            console.log(data);
+            var rideContractAddress = data[5][data[5].length - 1];
+            isLoading(false);
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
+          });
       }
+    } else if (activeStep === 2) {
+      axios.post('http://localhost:8000/api/rider/request-ride', {
+        user: {
+          "account": account,
+          "latitude": 25.0045,
+          "longitude": 25.001
+        }
+      }).then((response) => {
+        console.log(response.data.selectedDrivers);
+      }).catch((err) => {
+        console.log(err);
+      })
+      props.notifyNotificationListener("Sample")
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } else if (activeStep === 3) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    } else if (activeStep === 4) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else {
       //For Driver
       if (activeStep === 0) {
         let events = await rideManager.getPastEvents('requestDriverEvent', { filter: { _driverAddr: account }, fromBlock: 0, toBlock: 'latest' });
+        events = events.filter((event) => {
+          return event.returnValues._driverAddr == account;
+        });
+        console.log(events);
+
+
+        const ride = new web3.eth.Contract(Ride.abi, events[0].returnValues.rideAddr);
+        let info = await ride.methods.getRideInfo().call({ from: account });
+
+        console.log(info);
+
+        // web3.utils.hexToUtf8(name).trim()
+        
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
       } else if (activeStep == 1) {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
       } else if (activeStep == 2) {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
 
       }
     }
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-
   };
 
   const handleBack = () => {
@@ -196,7 +261,7 @@ export default function RideShareSteps(props) {
   return (
     <div>
       <GridContainer>
-        <GridItem xs={12} sm={12} md={6}>
+        <GridItem xs={12} sm={12} md={12}>
           <Card>
             <CardHeader color="warning">
               <h4 className={classes.cardTitleWhite}>Enjoy Ride Share</h4>
@@ -244,59 +309,6 @@ export default function RideShareSteps(props) {
               )}
             </CardBody>
           </Card>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={6}>
-          <Card>
-            <CardHeader color="primary">
-              <h4 className={classes.cardTitleWhite}>Select a Driver</h4>
-              <p className={classes.cardCategoryWhite}>
-                Registered Available Drivers Near You
-              </p>
-            </CardHeader>
-            <CardBody>
-              { }
-            </CardBody>
-
-          </Card>
-          <CustomTabs
-            title="Tasks:"
-            headerColor="primary"
-            tabs={[
-              {
-                tabName: "Bugs",
-                tabIcon: BugReport,
-                tabContent: (
-                  <Tasks
-                    checkedIndexes={[ 0, 3 ]}
-                    tasksIndexes={[ 0, 1, 2, 3 ]}
-                    tasks={bugs}
-                  />
-                )
-              },
-              {
-                tabName: "Website",
-                tabIcon: Code,
-                tabContent: (
-                  <Tasks
-                    checkedIndexes={[ 0 ]}
-                    tasksIndexes={[ 0, 1 ]}
-                    tasks={website}
-                  />
-                )
-              },
-              {
-                tabName: "Server",
-                tabIcon: Cloud,
-                tabContent: (
-                  <Tasks
-                    checkedIndexes={[ 1 ]}
-                    tasksIndexes={[ 0, 1, 2 ]}
-                    tasks={server}
-                  />
-                )
-              }
-            ]}
-          />
         </GridItem>
       </GridContainer>
     </div>

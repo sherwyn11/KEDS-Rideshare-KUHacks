@@ -54,7 +54,7 @@ contract RideManager {
     //// Events ////
     event RiderRegister(address indexed _address, bytes32 name);
     event DriverRegister(address indexed _address, bytes32 name);
-    event requestDriverEvent(address payable _riderAddr, address payable indexed _driverAddr, address rideAddr);
+    event requestDriverEvent(address payable _riderAddr, address payable _driverAddr, address rideAddr);
     
     
     //// Constructor ////
@@ -97,6 +97,10 @@ contract RideManager {
         return true;
     }
     
+    function updateDriverRating(address payable _driverAddr, uint256 _rating) external {
+        driversMapping[_driverAddr].rating = _rating;
+    }
+    
     
     /// Drivers ///
 
@@ -132,17 +136,17 @@ contract RideManager {
     
     /// Main ///
     
-    function requestRide(address payable _riderAddr, address payable _driverAddr, string[] memory _fromAddr, string[] memory _toAddr, bytes32 _amount) public {
+    function requestRide(address payable _riderAddr, string[] memory _fromAddr, string[] memory _toAddr, bytes32 _amount) public returns(address){
         Ride ride = new Ride(
             _riderAddr,
-            _driverAddr,
+            address(0),
             _fromAddr,
             _toAddr,
             _amount
         );
         ridersMapping[_riderAddr].rides.push(address(ride));
         
-        emit requestDriverEvent(_riderAddr, _driverAddr, address(ride));
+        return address(ride);
     }
     
     function returnDriversAvailable() external view returns(address[] memory) {
