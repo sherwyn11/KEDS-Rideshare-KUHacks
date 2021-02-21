@@ -8,6 +8,10 @@ import Icon from "@material-ui/core/Icon";
 import BugReport from "@material-ui/icons/BugReport";
 import Code from "@material-ui/icons/Code";
 import Cloud from "@material-ui/icons/Cloud";
+import CropFreeIcon from '@material-ui/icons/CropFree';
+import image from "assets/img/ride.png";
+import qrcode from "assets/img/qrcode.png";
+
 // core components
 import Table from "components/Table/Table.js";
 import Stepper from '@material-ui/core/Stepper';
@@ -38,6 +42,9 @@ import { CardActionArea, TextField } from "@material-ui/core";
 import Input from '@material-ui/core/Input';
 import Ride from '../../contracts/Ride.json';
 import axios from 'axios';
+import QRCode from 'qrcode.react';
+import QrReader from 'react-qr-scanner'
+
 
 const useStyles = makeStyles((theme) => {
   return {
@@ -52,7 +59,7 @@ const useStyles = makeStyles((theme) => {
       padding: theme.spacing(3),
     },
     media: {
-      height: 140,
+      height: 120,
     },
   }
 });
@@ -76,6 +83,26 @@ export default function RideShareSteps(props) {
   const [userSelectedDriver, setUserSelectedDriver] = React.useState('');
   const [rideRequests, setRideRequests] = React.useState([]);
   const [rideContractAddress, setRideContractAddress] = React.useState('');
+  const [confirmed, setConfirmed] = React.useState(false);
+  const [previewStyle, setPreviewStyle] = React.useState({
+    height: 300,
+    width: 300,
+  });
+  const [qrcodeResult, setqrcodeResult] = React.useState('');
+
+  
+  function handleScan(data) {
+    setqrcodeResult(data);
+    if (data === rideContractAddress) {
+      alert('QR code verified successfully! Enjoy your ride!');
+      setActiveStep(4);
+    }
+  }
+
+  function handleError(err) {
+    console.error(err)
+  }
+
   const steps = getSteps();
 
   function getStepContent(step) {
@@ -89,15 +116,17 @@ export default function RideShareSteps(props) {
                   <CardMedia
                     image=""
                     title="Google Maps"
+                    className={classes.media}
+                    image={image}
                   />
                   <CardContent>
                     <Typography gutterBottom variant="h5" component="h2">
-                      RideShare Location
+                      Ride-Share Location
                   </Typography>
                     {
                       localStorage.getItem("destinationLng") === null ?
                         <Typography variant="body2" color="textSecondary" component="p">
-                          To book a RideShare all you would need to do is login to your RideShare account and choose a location. Enter your pickup and drop locations and click on ‘Ride Now’.
+                          To book a Ride-Share all you would need to do is login to your Ride-Share account and choose a location. Enter your pickup and drop locations and click on ‘Ride Now’.
                 </Typography>
                         :
 
@@ -135,7 +164,7 @@ export default function RideShareSteps(props) {
                 className={classes.textField}
                 onChange={handleNext}
                 value={seats}
-                helperText="Before confirming the booking you would need to choose the number of seats that you would wish to book."
+                helperText="Before confirming the booking you would need to choose the number of seats that you would wish to book. You can book up to 2 seats on your Ola Share ride. If you choose to book 2 seats, the pickup and drop location of the co-passenger traveling should be same."
                 variant="outlined"
               />
             </div>);
@@ -144,17 +173,22 @@ export default function RideShareSteps(props) {
             <CardBody>
               <Table
                 tableHeaderColor="primary"
-                tableHead={["Name", "Contact", "Car No.", "Rating", "Accept/Decline"]}
+                tableHead={["Name", "Contact", "Car No.", "Rating", "Amount", "Accept/Decline"]}
                 tableData={selectedDrivers}
               />
             </CardBody>
           </div>;
         case 3:
-          return ``;
+          return !confirmed ? `` : <QrReader
+            delay={100}
+            style={previewStyle}
+            onError={handleError}
+            onScan={handleScan}
+          />;
         case 4:
-          return ``;
+          return 'Ready to begin your Ride-Share journey for eco-friendly rides at pocket - friendly rates';
         case 5:
-          return ``;
+          return `Ride Completed!`;
         default:
           return 'Unknown step';
       }
@@ -171,7 +205,7 @@ export default function RideShareSteps(props) {
             </CardBody>
           </div>;
         case 1:
-          return ``;
+          return !confirmed ? `` : <QRCode value={rideContractAddress} />;
         case 2:
           return ``;
         default:
@@ -201,6 +235,10 @@ export default function RideShareSteps(props) {
               console.log(data);
               setRideContractAddress(data[5][data[5].length - 1]);
               // isLoading(false);
+              // let a = '';
+              // while (a === '') {
+              //   a = qrcodeResult;
+              // }
               setActiveStep((prevActiveStep) => prevActiveStep + 1);
             });
           // setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -224,6 +262,7 @@ export default function RideShareSteps(props) {
                 web3.utils.hexToUtf8(data.contact).trim(),
                 web3.utils.hexToUtf8(data.carNo).trim(),
                 data.rating.toString(),
+                "2 ETH", 
                 <Button
                   variant="contained"
                   color="primary"
@@ -264,7 +303,7 @@ export default function RideShareSteps(props) {
             .once('receipt', async (receipt) => {
               console.log(receipt);
             });
-          setActiveStep((prevActiveStep) => prevActiveStep + 1);
+          setConfirmed(true);
 
         }
 
@@ -275,9 +314,10 @@ export default function RideShareSteps(props) {
             console.log(receipt);
             let info = await ride.methods.getRideInfo().call({ from: account });
             console.log(info);
+            alert('Ride Completed!');
           });
       }
-    }else {
+    } else {
       //For Driver
       if (activeStep === 0) {
         console.log('heere');
@@ -312,7 +352,8 @@ export default function RideShareSteps(props) {
                         ride.methods.updateDriverConfirmation(true).send({ from: account })
                           .once('receipt', async (receipt) => {
                             console.log(receipt);
-                              setActiveStep((prevActiveStep) => prevActiveStep + 1);
+                            setConfirmed(true);
+                            setActiveStep((prevActiveStep) => prevActiveStep + 1);
                           });
                       });
                   }}
@@ -352,7 +393,7 @@ export default function RideShareSteps(props) {
   return (
     <div>
       <GridContainer>
-        <GridItem xs={12} sm={12} md={12}>
+        <GridItem xs={12} sm={12} md={10}>
           <Card>
             <CardHeader color="warning">
               <h4 className={classes.cardTitleWhite}>Enjoy Ride Share</h4>

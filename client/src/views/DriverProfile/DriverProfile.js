@@ -107,7 +107,7 @@ export default function DriverProfile(props) {
       localStorage.setItem('name', formData.name)
       localStorage.setItem('contact', formData.contact)
       localStorage.setItem('email', formData.email)
-      localStorage.setItem('carNo', accounts[ 0 ])
+      localStorage.setItem('carNo', "MH1234")
       localStorage.setItem('noOfSeats', formData.noOfSeats)
       localStorage.setItem('rating', formData.rating)
       localStorage.setItem('type', "1")
@@ -115,7 +115,7 @@ export default function DriverProfile(props) {
       var n = web3.utils.padRight(web3.utils.fromAscii(formData.name), 64);
       var c = web3.utils.padRight(web3.utils.fromAscii(formData.contact), 64);
       var e = web3.utils.padRight(web3.utils.fromAscii(formData.email), 64);
-      var cn = web3.utils.padRight(web3.utils.fromAscii(formData.c), 64);
+      var cn = web3.utils.padRight(web3.utils.fromAscii("MH1234"), 64);
 
       props.rideManager.methods.registerDriver(n, c, e, cn, Number(formData.noOfSeats), 1, accounts[ 0 ]).send({ from: accounts[ 0 ] })
         .once('receipt', (receipt) => {
@@ -189,7 +189,7 @@ export default function DriverProfile(props) {
                     <CustomInput
                       inputProps={{
                         onChange: (e) => handleChange(e),
-                        type: "number"
+                        type: "text"
                       }}
                       labelText="Car Number"
                       id="carNo"
