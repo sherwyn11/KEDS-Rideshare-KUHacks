@@ -1,4 +1,4 @@
-# KEDS-Rideshare-KUHacks
+# KEDS-Rideshare-KUHacks-Frontend
 
 ## Step Wise Breakdown
 
