@@ -60,6 +60,9 @@ npm i
 ```bash
 npm start
 ```
+
+View the Backend code <a href="https://github.com/sherwyn11/KEDS-Rideshare-KUHacks-Backend">here</a>.
+
 ## License
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
