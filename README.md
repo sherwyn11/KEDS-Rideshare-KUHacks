@@ -1,6 +1,6 @@
 # KEDS-Rideshare-KUHacks-Frontend 
 
-<img src="https://i.ibb.co/cyVQyDP/image.png" height="210px" width="200px"/>
+<img src="https://assets.devfolio.co/hackathons/8bd476c84ab94c298e1ef6165f6ab780/projects/3bd617c4e0c64d7594fb1cb4b02fe051/pic2s6qt1yom.png" height="210px" width="200px"/>
 
 ## The problem RideShare solves
 
