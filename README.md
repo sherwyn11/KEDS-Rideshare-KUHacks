@@ -61,7 +61,7 @@ npm i
 npm start
 ```
 
-View the Backend code <a href="https://github.com/sherwyn11/KEDS-Rideshare-KUHacks-Backend">here</a>.
+View the Backend repository <a href="https://github.com/sherwyn11/KEDS-Rideshare-KUHacks-Backend">here</a>.
 
 ## License
 
