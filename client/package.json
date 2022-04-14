@@ -45,7 +45,6 @@
     "url": "git+https://github.com/creativetimofficial/material-dashboard-react.git"
   },
   "keywords": [],
-  "homepage": "https://creativetimofficial.github.io/material-dashboard-react/#/dashboard",
   "optionalDependencies": {
     "@types/googlemaps": "3.39.6",
     "@types/markerclustererplus": "2.1.33",
